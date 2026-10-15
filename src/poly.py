@@ -147,7 +147,7 @@ class Poly:
             if not out:
                 out = ('-' if c < 0 else '') + body
             else:
-                out += (' - ' if c < 0 else ' + '_ + body
+                out += (' - ' if c < 0 else ' + ') + body
         return out if out else '0'
 
 
