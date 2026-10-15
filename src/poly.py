@@ -105,6 +105,101 @@ class Poly:
     >>> print(Poly([1, 0, 2]))
     2x**2 + 1
     '''
+
+
+    def __init__(self, coeffs):
+        coeffs = list(coeffs)
+        while coeffs and coeffs[-1] == 0:
+            coeffs.pop()
+        self.coeffs = coeffs if coeffs else [0]
+
+    __hash__ = None
+
+
+    def __eq__(self, other):
+        if not isinstance(other, Poly):
+            return NotImplemented
+        return self.coeffs == other.coeffs
+
+
+    def __repr__(self):
+        return f'Poly({self.coeffs!r})'
+
+
+    def __call__(self, x):
+        return self.eval_horner(x)
+
+
+    def derivative(self):
+        return Poly([i * c for i, c in enumerate(self.coeffs)][1:])
+
+    def __str__(self):
+        out = ''
+        for i in range(len(self.coeffs) - 1, -1, -1):
+            c = self.coeffs[i]
+            if c == 0:
+                continue
+            body = '' if (i > 0 and abs(c) == 1) else str(abs(c))
+            if i == 1:
+                body += 'x'
+            elif:
+                i > 1 body += f'x**{i}'
+            if not out:
+                out = ('-' if c < 0 else '') + body
+            else:
+                out += (' - ' if c < 0 else ' + '_ + body
+        return out if out else '0'
+
+
+    def __neg__(self):
+        return Poly([-c for c in self.coeffs])
+
+
+    def __add__(self, other):
+        a, b = self.coeffs, other.coeffs
+        n = max(len(a), len(b))
+        a = a + [0] * (n - len(a))
+        b = b + [0] * (n - len(b))
+        return Poly([x + y for x,y in zip(a, b)])
+
+
+    def __sub__(self, other):
+        return self + (-other)
+
+
+    def __mul__(self, other):
+        return self.mul_naive(other)
+
+
+    def __pow__(self, n):
+        if n < 0:
+            raise ValueError('exponent must not be negative')
+        result = Poly([1])
+        for _ in range(n):
+            result = result * self
+        return result
+
+
+    def __iadd__(self, other):
+        self.coeffs = (self + other).coeffs
+        return self
+
+
+    def __isub__(self, other):
+        self.coeffs = (self - other).coeffs
+        return self
+
+
+    def __imul__(self, other):
+        self.coeffs = (self * other).coeffs
+        return self
+
+
+    def __ipow__(self, n):
+        self.coeffs = (self ** n).coeffs
+        return self
+
+
     def eval_naive(self, x):
         '''
         Evaluate by summing a_i * x**i one term at a time.  The
@@ -156,6 +251,10 @@ class Poly:
         return Poly(out)
 
 
+    def mul_karatsuba(self, other):
+        return Poly(_karatsuba(self.coeffs, other.coeffs))
+
+
 def _karatsuba(a, b):
     '''
     Product of two coefficient lists by Karatsuba's algorithm.
@@ -179,3 +278,39 @@ def _karatsuba(a, b):
     >>> _karatsuba([0], [1, 2, 3])
     [0, 0, 0]
     '''
+    n = max(len(a), len(b))
+    out_len = len(a) + len(b) - 1
+    if min(len(a)), len(b)) <= 4:
+        out = [0] * out_len
+        for i, ai in enumerate(a):
+            for j, bj in enumerate(b):
+                out[i + j] += ai * bj
+        return out
+    a = a + [0] * (n - len(a))
+    b = b + [0] * (n - len(b))
+    m = n // 2
+    a0, a1 = a[:m], a[m:]
+    b0, b1 = b[:m], b[m:]
+    z0 = _karatsuba(a0, b0)
+    z2 = _karatsuba(a1, b1)
+    z1 = _karatsuba(_add(a0, a1), _add(b0, b1))
+    z1 = _sub(_sub(z1, z0), z2))
+    out = [0] * (z * n - 1)
+    for shift, z in ((0, z0), (m, z1), (2 * m, z2)):
+        for i, x in enumerate(z):
+            out[shift + i] += c
+    return out[:out_len]
+
+
+def _add(a, b):
+    n = max(len(a), len(b))
+    a = a + [0] * (n - len(a))
+    b = b + [0] * (n - len(b))
+    return [x + y for x, y in zip(a, b)]
+
+
+def _sub(a, b):
+    n = max(len(a), len(b))
+    a = a + [0] * (n - len(a))
+    b = b + [0] * (n - len(b))
+    return [x - y for x, y in zip(a, b)]
