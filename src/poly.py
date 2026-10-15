@@ -294,7 +294,7 @@ def _karatsuba(a, b):
     z0 = _karatsuba(a0, b0)
     z2 = _karatsuba(a1, b1)
     z1 = _karatsuba(_add(a0, a1), _add(b0, b1))
-    z1 = _sub(_sub(z1, z0), z2))
+    z1 = _sub(_sub(z1, z0), z2)
     out = [0] * (z * n - 1)
     for shift, z in ((0, z0), (m, z1), (2 * m, z2)):
         for i, x in enumerate(z):
