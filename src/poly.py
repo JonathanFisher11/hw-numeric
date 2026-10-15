@@ -142,8 +142,8 @@ class Poly:
             body = '' if (i > 0 and abs(c) == 1) else str(abs(c))
             if i == 1:
                 body += 'x'
-            elif:
-                i > 1 body += f'x**{i}'
+            elif i > 1:
+                body += f'x**{i}'
             if not out:
                 out = ('-' if c < 0 else '') + body
             else:
