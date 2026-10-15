@@ -106,7 +106,6 @@ class Poly:
     2x**2 + 1
     '''
 
-
     def __init__(self, coeffs):
         coeffs = list(coeffs)
         while coeffs and coeffs[-1] == 0:
@@ -115,20 +114,16 @@ class Poly:
 
     __hash__ = None
 
-
     def __eq__(self, other):
         if not isinstance(other, Poly):
             return NotImplemented
         return self.coeffs == other.coeffs
 
-
     def __repr__(self):
         return f'Poly({self.coeffs!r})'
 
-
     def __call__(self, x):
         return self.eval_horner(x)
-
 
     def derivative(self):
         return Poly([i * c for i, c in enumerate(self.coeffs)][1:])
@@ -150,26 +145,21 @@ class Poly:
                 out += (' - ' if c < 0 else ' + ') + body
         return out if out else '0'
 
-
     def __neg__(self):
         return Poly([-c for c in self.coeffs])
-
 
     def __add__(self, other):
         a, b = self.coeffs, other.coeffs
         n = max(len(a), len(b))
         a = a + [0] * (n - len(a))
         b = b + [0] * (n - len(b))
-        return Poly([x + y for x,y in zip(a, b)])
-
+        return Poly([x + y for x, y in zip(a, b)])
 
     def __sub__(self, other):
         return self + (-other)
 
-
     def __mul__(self, other):
         return self.mul_naive(other)
-
 
     def __pow__(self, n):
         if n < 0:
@@ -179,26 +169,21 @@ class Poly:
             result = result * self
         return result
 
-
     def __iadd__(self, other):
         self.coeffs = (self + other).coeffs
         return self
-
 
     def __isub__(self, other):
         self.coeffs = (self - other).coeffs
         return self
 
-
     def __imul__(self, other):
         self.coeffs = (self * other).coeffs
         return self
 
-
     def __ipow__(self, n):
         self.coeffs = (self ** n).coeffs
         return self
-
 
     def eval_naive(self, x):
         '''
@@ -250,7 +235,6 @@ class Poly:
                 out[i + j] += ai * bj
         return Poly(out)
 
-
     def mul_karatsuba(self, other):
         return Poly(_karatsuba(self.coeffs, other.coeffs))
 
@@ -280,7 +264,7 @@ def _karatsuba(a, b):
     '''
     n = max(len(a), len(b))
     out_len = len(a) + len(b) - 1
-    if min(len(a)), len(b)) <= 4:
+    if min(len(a), len(b)) <= 4:
         out = [0] * out_len
         for i, ai in enumerate(a):
             for j, bj in enumerate(b):
@@ -295,9 +279,9 @@ def _karatsuba(a, b):
     z2 = _karatsuba(a1, b1)
     z1 = _karatsuba(_add(a0, a1), _add(b0, b1))
     z1 = _sub(_sub(z1, z0), z2)
-    out = [0] * (z * n - 1)
+    out = [0] * (2 * n - 1)
     for shift, z in ((0, z0), (m, z1), (2 * m, z2)):
-        for i, x in enumerate(z):
+        for i, c in enumerate(z):
             out[shift + i] += c
     return out[:out_len]
 
